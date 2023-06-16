@@ -1,0 +1,13 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+{{ block.super }}
+
+<div class="custom-button-container">
+    <form action="{% url 'update_estimator' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <button type="submit" class="custom-button">Update Estimator Times</button>
+    </form>
+</div>
+{% endblock %}

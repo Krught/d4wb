@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diablo 4 - World Bosses - Login</title>
+    <link rel="icon" href="/static/img/icon.ico">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet" />
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2L3VH4HCL5"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-2L3VH4HCL5');
+</script>
+<body>
+    <nav class="navbar container">
+        <a href="{% url 'home' %}" class="logo scroll">
+            <img src="/static/img/logo.png" alt="" width="50" height="50">
+            Diablo 4 - World Bosses
+        </a>
+        <input type="checkbox" id="toggler" />
+        <label for="toggler"><i class="ri-menu-line"></i></label>
+        <div class="menu">
+            <ul class="list">
+                <li><a href="{% url 'home' %}">Home</a></li>
+                {% if logged_in %}
+                    <li>
+                        <div class="login-toggle"><div class="login-form-container"></div></div>
+                        <form action="{% url 'logout' %}" method="post">
+                            {% csrf_token %}
+                        <button type="submit">Logout</button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li>
+                        <div class="login-container">
+                            <a href="#" class="login-toggle">Login</a>
+                            <div class="login-form-container">
+                                <form method="POST" action="{% url 'login' %}">
+                                    <label for="username">Username:</label>
+                                    <input type="text" name="username" id="username" required>
+                                    <br>
+                                
+                                    <label for="password">Password:</label>
+                                    <input type="password" name="password" id="password" required>
+                                    <br>
+                                
+                                    <button type="submit" name="submit">Submit</button>
+                                </form>  
+                            </div>
+                          </div>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    <div id="user_server_message">
+        {{ user_server_message }}
+    </div>
+    <div id="login-form">
+    <h1>Login</h1>
+    <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username" required>
+        <br>
+    
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" required>
+        <br>
+    
+        <button type="submit" name="submit">Login</button>
+    </form>   
+    <h1>Create Account</h1>
+    <form method="get" action="{{ create_account_url }}">
+        {% csrf_token %}
+        <button type="submit">Create Account</button>
+    </form> 
+    </div>
+    <script src="/static/js/main.js" defer></script>
+</body>
+<footer>
+    <div>
+        <p>&copy; 2023 Diablo 4 - World Bosses</p>
+        <p><a href="https://D4WB.com">D4WB.com</a></p>
+    </div>
+    <div>
+        <p>Join our Discord server for updates and discussions:</p>
+        <p><a href="">Discord Link</a></p>
+    </div>
+  </footer>
+</html>

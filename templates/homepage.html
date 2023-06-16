@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diablo 4 - World Bosses</title>
+    <link rel="icon" href="/static/img/icon.ico">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/home.css">
+    <script src="/static/js/startcd.js"></script>
+    <script src="/static/js/main.js" defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <script src="https://kit.fontawesome.com/3aa2e3b400.js" crossorigin="anonymous"></script>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2L3VH4HCL5"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-2L3VH4HCL5');
+</script>
+<body>
+    <nav class="navbar container">
+        <a href="{% url 'home' %}" class="logo scroll">
+            <img src="/static/img/logo.png" alt="" width="50" height="50">
+            Diablo 4 - World Bosses
+        </a>
+        <input type="checkbox" id="toggler" />
+        <label for="toggler"><i class="ri-menu-line"></i></label>
+        <div class="menu">
+            <ul class="list">
+                <li><a href="{% url 'home' %}">Home</a></li>
+                {% if logged_in %}
+                    <li>
+                        <div class="login-toggle"><div class="login-form-container"></div></div>
+                        <form action="{% url 'logout' %}" method="post">
+                            {% csrf_token %}
+                        <button type="submit">Logout</button>
+                        </form>
+                    </li>
+                    <li><a href="{% url 'settings' %}">Settings</a></li>
+                    {% else %}
+                    <li>
+                        <div class="login-container">
+                            <a href="#" class="login-toggle">Login</a>
+                            <div class="login-form-container">
+                                <form method="POST" action="{% url 'login' %}">
+                                    {% csrf_token %}
+                                    <label for="username">Username:</label>
+                                    <input type="text" name="username" id="username" required>
+                                    <br>
+                                
+                                    <label for="password">Password:</label>
+                                    <input type="password" name="password" id="password" required>
+                                    <br>
+                                
+                                    <button type="submit" name="submit">Submit</button>
+                                </form>  
+                            </div>
+                          </div>
+                    </li>
+                    <li>
+                        <div class="create-account-container">
+                            <div class="create-account">
+                                <form method="get" action="{% url 'create_account' %}">
+                                    {% csrf_token %}
+                                    <button type="submit">Create Account</button>
+                                </form> 
+                            </div>
+                          </div>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    <div id="user_server_message">
+        {{ user_server_message }}
+    </div>
+
+
+    
+    <div id="bosses">
+        <div hidden id="boss-est-timer">
+            {{ next_spawn.est_datetime }}
+        </div>
+        <div hidden id="boss-min-timer">
+            {{ next_spawn.min_datetime }}
+        </div>
+        <div hidden id="boss-max-timer">
+            {{ next_spawn.max_datetime }}
+        </div>
+        <p3>Next World Boss Spawn</p3>
+
+            <div id="high-new-spawn">
+                {% for item in reported_spawns %}
+                    {% if item.thumbs_up >= 100 %}
+                    <h1>Confirmed Spawns</h1>
+                        <li>{{ item.boss_name }} - {{ item.location }} - {{ item.datetime }} - Thumbs Up: <span id="thumbs-up-count-{{ item.id }}">{{ item.thumbs_up }}</span> - Thumbs Down: <span id="thumbs-down-count-{{ item.id }}">{{ item.thumbs_down }}</span>
+                            {% if logged_in %}
+                                <button onclick="vote('{{ item.id }}', 'up')"><i class="fa-solid fa-thumbs-up"></i></button>
+                                <button onclick="vote('{{ item.id }}', 'down')"><i class="fa-solid fa-thumbs-down"></i></button>
+                                {% else %}
+                                    - Log-In To Vote
+                            {% endif %}
+                            <div id="countdown-next-{{ item.id }}"></div><div hidden id="datetime-{{ item.id }}">{{ item.datetime }}</div>
+                        </li>
+                        <br>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+
+            <p>Boss name: {{ next_spawn.boss_name }}</p>
+            <p>Location: {{ next_spawn.location }}</p>
+            <p>Estimated: {{ next_spawn.est_datetime }}</p>
+            <div id="countdown"></div>
+            <p>Earliest: {{ next_spawn.min_datetime }}</p>
+            <div id="countdown-min"></div>
+            <p>Latest: {{ next_spawn.max_datetime }}</p>
+            <div id="countdown-max"></div>
+            <br><br>
+        <div id="last-boss">
+        <p3>Last World Boss Spawn</p3>
+            <p>Boss name: {{ most_recent_spawn.boss_name }}</p>
+            <p>Datetime: {{ most_recent_spawn.datetime }}</p>
+            <p>Location: {{ most_recent_spawn.location }}</p>
+            <br><br>
+        </div>
+    </div>
+    
+
+    <div id="possible-spawns">
+        {% if reported_spawns %}
+        <h1>Unconfirmed Spawns</h1>
+        {% endif %}
+        <ul>
+        {% for item in reported_spawns %}
+            {% if item.thumbs_up < 100 %}
+                <li>{{ item.boss_name }} - {{ item.location }} - {{ item.datetime }} - Thumbs Up: <span id="thumbs-up-count-{{ item.id }}">{{ item.thumbs_up }}</span> - Thumbs Down: <span id="thumbs-down-count-{{ item.id }}">{{ item.thumbs_down }}</span>
+                {% if logged_in %}
+                    <button onclick="vote('{{ item.id }}', 'up')"><i class="fa-solid fa-thumbs-up"></i></button>
+                    <button onclick="vote('{{ item.id }}', 'down')"><i class="fa-solid fa-thumbs-down"></i></button>
+                    {% else %}
+                        - Log-In To Vote
+                {% endif %}
+                <div id="countdown-next-{{ item.id }}"></div><div hidden id="datetime-{{ item.id }}">{{ item.datetime }}</div>
+                </li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    </div>
+    <script>
+    {% for item in reported_spawns %}
+        startCountdown("countdown-next-{{ item.id }}", "datetime-{{ item.id }}");
+    {% endfor %}
+
+
+    function vote(id, voteType) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/vote/' + id + '/');
+        xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    alert(response.message);
+                    // Update the vote counts dynamically
+                    updateVoteCounts(id);
+                } else {
+                    alert(response.message);
+                }
+            }
+        };
+        var data = new FormData();
+        data.append('voteType', voteType);
+        xhr.send(data);
+    }
+
+    function updateVoteCounts(id) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/get_vote_counts/' + id + '/');
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                if (response.success) {
+                    var thumbsUpCount = response.thumbs_up;
+                    var thumbsDownCount = response.thumbs_down;
+
+                    // Update the vote counts in the DOM
+                    var thumbsUpElement = document.getElementById('thumbs-up-count-' + id);
+                    var thumbsDownElement = document.getElementById('thumbs-down-count-' + id);
+
+                    if (thumbsUpElement && thumbsDownElement) {
+                        thumbsUpElement.textContent = thumbsUpCount;
+                        thumbsDownElement.textContent = thumbsDownCount;
+                    }
+                }
+            }
+        };
+        xhr.send();
+    }
+    </script>
+
+    {% if logged_in %}
+    <div id="record-spawn">
+        <form id="boss-form" class="form" method="POST" action="{% url 'record_spawn' %}">
+            {% csrf_token %}
+            <div class="card">
+            <h2>Add World Boss Spawn</h2>
+            <br>
+            <label class="lb" for="boss-name">Boss Name:</label>
+            <select class="infos" id="boss-name" name="boss-name">
+            <br>
+            <!-- Options for boss names -->
+            <option value="Avarice">Avarice</option>
+            <option value="Ashava">Ashava</option>
+            <option value="Wandering Death">Wandering Death</option>
+            </select>
+            <br>
+            <label class="lb" for="boss-location">Location:</label>
+            <select class="infos" id="boss-location" name="boss-location">
+                <option value="Caen Adar, Scosglen">Caen Adar, Scosglen</option>
+                <option value="Seared Basin, Kehjistan">Seared Basin, Kehjistan</option>
+                <option value="Fields of Desecration, Hawezar">Fields of Desecration, Hawezar</option>
+                <option value="Saraan Caldera, Dry Steppes">Saraan Caldera, Dry Steppes</option>
+                <option value="The Crucible, Fractured Peaks">The Crucible, Fractured Peaks</option>
+                <!-- Add more location options as needed -->
+            </select>
+            <br>
+            <label class="lb" for="boss-datetime">Datetime:</label>
+            <input class="infos" type="datetime-local" id="boss-datetime" name="boss-datetime">
+            <br><br>
+            <button id="send" type="submit">Submit</button>
+            <button id="limpar" type="reset">Clear </button>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+
+
+</body>
+<footer>
+    <div>
+        <p>&copy; 2023 Diablo 4 - World Bosses</p>
+        <p><a href="{% url 'home' %}">D4WB.com</a></p>
+    </div>
+    <div>
+        <p>Join our Discord server for updates and discussions:</p>
+        <p><a href="https://discord.gg/FCCdCnEF4d">Temp Discord Link</a></p>
+    </div>
+  </footer>
+</html>
