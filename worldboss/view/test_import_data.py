@@ -47,7 +47,10 @@ data = [
     {'boss_name': 'Ashava', 'datetime': '6/14/23 20:39', 'location': 'Saraan Caldera, Dry Steppes'},
     {'boss_name': 'Wandering Death', 'datetime': '6/15/23 1:33', 'location': 'Fields of Desecration, Hawezar'},
     {'boss_name': 'Wandering Death', 'datetime': '6/15/23 6:58', 'location': 'Saraan Caldera, Dry Steppes'},
-    {'boss_name': 'Avarice', 'datetime': '6/15/23 12:52', 'location': 'The Crucible, Fractured Peaks'}
+    {'boss_name': 'Avarice', 'datetime': '6/15/23 12:52', 'location': 'The Crucible, Fractured Peaks'},
+    {'boss_name': 'Avarice', 'datetime': '6/15/23 18:44', 'location': 'Saraan Caldera, Dry Steppes'},
+    {'boss_name': 'Ashava', 'datetime': '6/16/23 2:11', 'location': 'Fields of Desecration, Hawezar'},
+
 ]
 
 

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Spawns, Estimated, UploadedData, UserVote
+from .models import Spawns, Estimated, UploadedData, UserVote, UserTimezone
 
 # Register your models here.
 class SpawnsAdmin(admin.ModelAdmin):
@@ -22,3 +22,7 @@ admin.site.register(UploadedData, UploadedAdmin)
 class UserVoteAdmin(admin.ModelAdmin):
     list_display = ('user', 'spawn', 'vote_type')
 admin.site.register(UserVote, UserVoteAdmin)
+
+class UserTimezoneAdmin(admin.ModelAdmin):
+    list_display = ('user', 'timezone')
+admin.site.register(UserTimezone, UserTimezoneAdmin)

@@ -31,7 +31,7 @@ SECRET_KEY = conf['Website Secret']['app_secret'].strip('"')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['www.d4wb.com', '127.0.0.1']
+ALLOWED_HOSTS = ['www.d4wb.com', '127.0.0.1', '192.168.0.88']
 
 
 # Application definition

@@ -2,7 +2,9 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
+import pytz
 
+timezones = [(tz, tz) for tz in pytz.all_timezones]
 
 
 # Create your models here.
@@ -35,6 +37,10 @@ class UserVote(models.Model):
 
     class Meta:
         unique_together = ['user', 'spawn']
+
+class UserTimezone(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    timezone = models.CharField(max_length=50, choices=timezones, default='America/New_York')
 
 
 

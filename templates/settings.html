@@ -88,6 +88,12 @@
         
         <button type="submit" name="submit">Update Password</button>
     </form>   
+    <form method="post">
+        Time-Zone Selection
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
     </div>
     <script>
         function checkPassword(input) {
