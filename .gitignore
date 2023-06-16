@@ -1,4 +1,5 @@
 config/db_passwords.properties
 d4wb/__pycache__/*
 worldboss/__pycache__/*
+worldboss/migrations/__pycache__/*
 worldboss/view/__pycache__/*
