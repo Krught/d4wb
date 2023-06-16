@@ -9,6 +9,7 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="/static/css/main.css">
     <link rel="stylesheet" href="/static/css/home.css">
+    <script src="/static/js/moment.js"></script>
     <script src="/static/js/startcd.js"></script>
     <script src="/static/js/main.js" defer></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet" />
@@ -82,16 +83,18 @@
     </div>
 
 
-    
+    <div id="user-timezone" hidden>{{ user_timezone }}</div>
+
+
     <div id="bosses">
         <div hidden id="boss-est-timer">
-            {{ next_spawn.est_datetime }}
+            {{ next_spawn.est_datetime|date:"F j, Y," }} {{ next_spawn.est_datetime|time:"g:i a" }}
         </div>
         <div hidden id="boss-min-timer">
-            {{ next_spawn.min_datetime }}
+            {{ next_spawn.min_datetime|date:"F j, Y," }} {{ next_spawn.min_datetime|time:"g:i a" }}
         </div>
         <div hidden id="boss-max-timer">
-            {{ next_spawn.max_datetime }}
+            {{ next_spawn.max_datetime|date:"F j, Y," }} {{ next_spawn.max_datetime|time:"g:i a" }}
         </div>
         <p3>Next World Boss Spawn</p3>
 
@@ -99,14 +102,14 @@
                 {% for item in reported_spawns %}
                     {% if item.thumbs_up >= 100 %}
                     <h1>Confirmed Spawns</h1>
-                        <li>{{ item.boss_name }} - {{ item.location }} - {{ item.datetime }} - Thumbs Up: <span id="thumbs-up-count-{{ item.id }}">{{ item.thumbs_up }}</span> - Thumbs Down: <span id="thumbs-down-count-{{ item.id }}">{{ item.thumbs_down }}</span>
+                        <li>{{ item.boss_name }} - {{ item.location }} - {{ item.datetime|date:"F j, Y," }} {{ item.datetime|time:"g:i a" }} - Thumbs Up: <span id="thumbs-up-count-{{ item.id }}">{{ item.thumbs_up }}</span> - Thumbs Down: <span id="thumbs-down-count-{{ item.id }}">{{ item.thumbs_down }}</span>
                             {% if logged_in %}
                                 <button onclick="vote('{{ item.id }}', 'up')"><i class="fa-solid fa-thumbs-up"></i></button>
                                 <button onclick="vote('{{ item.id }}', 'down')"><i class="fa-solid fa-thumbs-down"></i></button>
                                 {% else %}
                                     - Log-In To Vote
                             {% endif %}
-                            <div id="countdown-next-{{ item.id }}"></div><div hidden id="datetime-{{ item.id }}">{{ item.datetime }}</div>
+                            <div id="countdown-next-{{ item.id }}"></div><div hidden id="datetime-{{ item.id }}">{{ item.datetime|date:"F j, Y," }} {{ item.datetime|time:"g:i a" }}</div>
                         </li>
                         <br>
                     {% endif %}
@@ -116,18 +119,19 @@
 
             <p>Boss name: {{ next_spawn.boss_name }}</p>
             <p>Location: {{ next_spawn.location }}</p>
-            <p>Estimated: {{ next_spawn.est_datetime }}</p>
+            <p>Estimated: {{ next_spawn.est_datetime|date:"F j, Y," }} {{ next_spawn.est_datetime|time:"g:i a" }}</p>
             <div id="countdown"></div>
-            <p>Earliest: {{ next_spawn.min_datetime }}</p>
+            <p>Earliest: {{ next_spawn.min_datetime|date:"F j, Y," }} {{ next_spawn.min_datetime|time:"g:i a" }}</p>
             <div id="countdown-min"></div>
-            <p>Latest: {{ next_spawn.max_datetime }}</p>
+            <p>Latest: {{ next_spawn.max_datetime|date:"F j, Y," }} {{ next_spawn.max_datetime|time:"g:i a" }}</p>
             <div id="countdown-max"></div>
             <br><br>
         <div id="last-boss">
         <p3>Last World Boss Spawn</p3>
             <p>Boss name: {{ most_recent_spawn.boss_name }}</p>
-            <p>Datetime: {{ most_recent_spawn.datetime }}</p>
+            <p>Datetime: {{ most_recent_spawn.datetime|date:"F j, Y," }} {{ most_recent_spawn.datetime|time:"g:i a" }}</p>
             <p>Location: {{ most_recent_spawn.location }}</p>
+            {{ most_recent_spawn.datetime }}
             <br><br>
         </div>
     </div>
@@ -140,14 +144,14 @@
         <ul>
         {% for item in reported_spawns %}
             {% if item.thumbs_up < 100 %}
-                <li>{{ item.boss_name }} - {{ item.location }} - {{ item.datetime }} - Thumbs Up: <span id="thumbs-up-count-{{ item.id }}">{{ item.thumbs_up }}</span> - Thumbs Down: <span id="thumbs-down-count-{{ item.id }}">{{ item.thumbs_down }}</span>
+                <li>{{ item.boss_name }} - {{ item.location }} - {{ item.datetime|date:"F j, Y," }} {{ item.datetime|time:"g:i a" }} - Thumbs Up: <span id="thumbs-up-count-{{ item.id }}">{{ item.thumbs_up }}</span> - Thumbs Down: <span id="thumbs-down-count-{{ item.id }}">{{ item.thumbs_down }}</span>
                 {% if logged_in %}
                     <button onclick="vote('{{ item.id }}', 'up')"><i class="fa-solid fa-thumbs-up"></i></button>
                     <button onclick="vote('{{ item.id }}', 'down')"><i class="fa-solid fa-thumbs-down"></i></button>
                     {% else %}
                         - Log-In To Vote
                 {% endif %}
-                <div id="countdown-next-{{ item.id }}"></div><div hidden id="datetime-{{ item.id }}">{{ item.datetime }}</div>
+                <div id="countdown-next-{{ item.id }}"></div><div hidden id="datetime-{{ item.id }}">{{ item.datetime|date:"F j, Y," }} {{ item.datetime|time:"g:i a" }}</div>
                 </li>
             {% endif %}
         {% endfor %}
@@ -231,11 +235,12 @@
                 <!-- Add more location options as needed -->
             </select>
             <br>
-            <label class="lb" for="boss-datetime">Datetime:</label>
+            <label class="lb" for="boss-datetime">Datetime: ({{ user_timezone }})</label>
             <input class="infos" type="datetime-local" id="boss-datetime" name="boss-datetime">
             <br><br>
             <button id="send" type="submit">Submit</button>
             <button id="limpar" type="reset">Clear </button>
+            <p>Set Timezone In Settings</p>
             </div>
         </form>
     </div>
