@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from datetime import timedelta
 import pytz
+from worldboss.view.send_discord_message import send_discord_message
 
 def record_spawn(request):
     if request.method == 'POST' and request.user.is_authenticated:
@@ -51,6 +52,11 @@ def record_spawn(request):
             datetime=datetime_conv,
             user=request.user
         )
+
+
+        discord_message = f"Unconfirmed New Spawn Detected\nBoss: {new_spawn.boss_name}\nLocation: {new_spawn.location}\nTime: {new_spawn.datetime}\nReported By: {new_spawn.user}"
+        send_discord_message("https://discord.com/api/webhooks/1119495591903363112/M01KgFThqNeyaNiw-ubkhKpDkpcx3LJqU0Ude5cpDX2gWTPKQ6vXjskA06NgjHJY1hoM", discord_message)
+
         new_spawn.save()
         
         return redirect('home')  # Redirect to home
